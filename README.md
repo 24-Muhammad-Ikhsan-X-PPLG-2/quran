@@ -24,12 +24,13 @@ A simple **Qur'an mobile application** built with **React Native Expo** that all
 
 ## ✨ Features
 
-- 📖 **Complete 114 Surahs** of the Qur'an
-- 🕌 **Arabic text** with **Latin transliteration**
+- 📖 **Complete 114 Surahs**
+- 🕌 **Arabic text with Latin transliteration**
 - 🇮🇩 **Indonesian translation**
-- 💾 **Save last reading progress** so users can continue where they left off
-- 🌙 **Asmaul Husna** (99 Names of Allah)
-- 📱 Simple and clean mobile interface
+- 🔊 **Play audio for each verse**
+- 💾 **Save last reading progress** to continue where you left off
+- 🌙 **Asmaul Husna (99 Names of Allah)**
+- 📱 **Simple and responsive mobile interface**
 
 ---
 
