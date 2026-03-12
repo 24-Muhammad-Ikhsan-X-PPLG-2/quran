@@ -2,8 +2,8 @@
 
 ![React Native](https://img.shields.io/badge/React%20Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Android](https://img.shields.io/badge/Platform-Android-green?style=for-the-badge&logo=android&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 A simple **Qur'an mobile application** built with **React Native Expo** that allows users to read the Qur'an easily on Android devices.
@@ -12,9 +12,13 @@ A simple **Qur'an mobile application** built with **React Native Expo** that all
 
 ## 📸 Preview
 
-![Preview](./assets/preview.png)
+<p align="center">
+  <img src="./assets/preview1.png" width="250"/>
+  <img src="./assets/preview2.png" width="250"/>
+  <img src="./assets/preview3.png" width="250"/>
+</p>
 
-> Replace this image with screenshots of your application.
+> Preview of the quran app.
 
 ---
 
