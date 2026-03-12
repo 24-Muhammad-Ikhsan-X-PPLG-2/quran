@@ -49,13 +49,13 @@ Built using **React Native with Expo**.
 Clone the repository:
 
 ```bash
-git clone https://github.com/username/quran-app.git
+git clone https://github.com/24-Muhammad-Ikhsan-X-PPLG-2/quran.git
 ```
 
 Go to the project directory:
 
 ```bash
-cd quran-app
+cd quran
 ```
 
 Install dependencies:
