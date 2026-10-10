@@ -1,28 +1,33 @@
 import React, { FC } from "react";
-import { View } from "react-native";
-import { ActivityIndicator, Appbar, useTheme } from "react-native-paper";
+import { ActivityIndicator, Text, View } from "react-native";
+import { useAppColors } from "../hooks/useAppColors";
 
 type RenderLoadingType = {
   title?: string;
 };
 
 export const RenderLoading: FC<RenderLoadingType> = ({ title = "Quran" }) => {
-  const { colors } = useTheme();
+  const colors = useAppColors();
   return (
     <>
-      <Appbar.Header
+      <View
         style={{
           backgroundColor: colors.elevation.level4,
+          height: 64,
+          paddingHorizontal: 16,
+          justifyContent: "center",
         }}
       >
-        <Appbar.Content
-          title={title}
-          titleStyle={{
+        <Text
+          style={{
+            color: colors.onSurface,
             fontWeight: "700",
             fontSize: 28,
           }}
-        />
-      </Appbar.Header>
+        >
+          {title}
+        </Text>
+      </View>
       <View
         style={{
           flex: 1,
@@ -31,7 +36,7 @@ export const RenderLoading: FC<RenderLoadingType> = ({ title = "Quran" }) => {
           alignItems: "center",
         }}
       >
-        <ActivityIndicator animating size={60} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     </>
   );

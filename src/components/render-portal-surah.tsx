@@ -1,38 +1,42 @@
-import { router } from "expo-router";
-import { FC, useState } from "react";
-import { View } from "react-native";
-import {
-  ActivityIndicator,
-  Button,
-  Dialog,
-  Modal,
-  Portal,
-  Text,
-} from "react-native-paper";
+import { FC } from "react";
+import { ActivityIndicator, Modal, Pressable, Text, View } from "react-native";
+import { useAppColors } from "../hooks/useAppColors";
 
 type RenderPortalSurahProps = {
   isLoading: boolean;
   isDialogBackShown: boolean;
-  setIsDialogBackShown: (value: boolean) => void;
+  handleDismissBackDialog: () => void;
   handleSaveConditionScroll: () => void;
+  handleCancelBack: () => void;
 };
 
 const RenderPortalSurah: FC<RenderPortalSurahProps> = ({
   isLoading,
   handleSaveConditionScroll,
+  handleCancelBack,
   isDialogBackShown,
-  setIsDialogBackShown,
+  handleDismissBackDialog,
 }) => {
+  const colors = useAppColors();
   return (
-    <Portal>
-      <Modal visible={isLoading}>
-        <View>
-          <ActivityIndicator size={50} />
+    <>
+      <Modal visible={isLoading} transparent animationType="fade">
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors.backdrop,
+          }}
+        >
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text
             style={{
+              color: colors.onSurface,
               textAlign: "center",
               fontSize: 28,
               fontFamily: "Poppins_Bold",
+              includeFontPadding: false,
               marginTop: 10,
             }}
           >
@@ -40,49 +44,88 @@ const RenderPortalSurah: FC<RenderPortalSurahProps> = ({
           </Text>
         </View>
       </Modal>
-      <Dialog
+      <Modal
         visible={isDialogBackShown}
-        onDismiss={() => setIsDialogBackShown(false)}
+        transparent
+        animationType="fade"
+        onRequestClose={handleDismissBackDialog}
       >
-        <Dialog.Title
+        <View
           style={{
-            fontFamily: "Poppins_Bold",
+            flex: 1,
+            justifyContent: "center",
+            padding: 24,
+            backgroundColor: colors.backdrop,
           }}
         >
-          Ingin simpan?
-        </Dialog.Title>
-        <Dialog.Content>
-          <Text
+          <View
             style={{
-              fontFamily: "Poppins_Regular",
+              padding: 24,
+              borderRadius: 24,
+              backgroundColor: colors.elevation.level2,
+              elevation: 8,
             }}
           >
-            Kamu ingin simpan kondisi sekarang?
-          </Text>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button
-            onPress={() => {
-              setIsDialogBackShown(false);
-              router.back();
-            }}
-            labelStyle={{
-              fontFamily: "Poppins_Regular",
-            }}
-          >
-            No
-          </Button>
-          <Button
-            onPress={handleSaveConditionScroll}
-            labelStyle={{
-              fontFamily: "Poppins_Regular",
-            }}
-          >
-            Yes
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
+            <Text
+              style={{
+                color: colors.onSurface,
+                fontFamily: "Poppins_Bold",
+                includeFontPadding: false,
+                fontSize: 22,
+                marginBottom: 16,
+              }}
+            >
+              Ingin simpan?
+            </Text>
+            <Text
+              style={{
+                color: colors.onSurface,
+                fontFamily: "Poppins_Regular",
+                includeFontPadding: false,
+              }}
+            >
+              Kamu ingin simpan kondisi sekarang?
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                marginTop: 24,
+              }}
+            >
+              <Pressable
+                onPress={handleCancelBack}
+                style={{ padding: 8, marginRight: 12 }}
+              >
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontFamily: "Poppins_Regular",
+                    includeFontPadding: false,
+                  }}
+                >
+                  No
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSaveConditionScroll}
+                style={{ padding: 8 }}
+              >
+                <Text
+                  style={{
+                    color: colors.primary,
+                    fontFamily: "Poppins_Regular",
+                    includeFontPadding: false,
+                  }}
+                >
+                  Yes
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 

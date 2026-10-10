@@ -1,50 +1,46 @@
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, FlashListRef } from "@shopify/flash-list";
 import { isiQuranType } from "../types/quran";
-import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import React, { FC } from "react";
-import { Divider, List, Searchbar, Text, useTheme } from "react-native-paper";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+import { FC, ReactElement, RefObject } from "react";
 import { router } from "expo-router";
 import { removeHtmlTags } from "../lib/utils";
-import { View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAppColors } from "../hooks/useAppColors";
 
 type RenderListHomeProps = {
   quran: isiQuranType[];
-  FlashListRef: React.RefObject<FlashList<isiQuranType>>;
+  FlashListRef: RefObject<FlashListRef<isiQuranType> | null>;
   handleOnScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  ListHeaderComponent: ReactElement;
 };
 
 const RenderListHome: FC<RenderListHomeProps> = ({
   quran,
   FlashListRef,
   handleOnScroll,
+  ListHeaderComponent,
 }) => {
+  const colors = useAppColors();
   return (
     <FlashList
       data={quran}
       ref={FlashListRef}
       keyExtractor={(item) => item.nomor.toString()}
-      estimatedItemSize={78}
       onScroll={handleOnScroll}
+      ListHeaderComponent={ListHeaderComponent}
+      contentContainerStyle={{ paddingBottom: 20 }}
       renderItem={({ item }) => {
-        if (item.nomor === 1) {
-          return (
-            <>
-              {/* searchbar */}
-              <Searchbar
-                onPress={() => router.push("/search")}
-                value=""
-                style={{
-                  marginBottom: 5,
-                }}
-                placeholder="Search surat..."
-              />
-              <RenderListItem item={item} />
-            </>
-          );
-        }
         return <RenderListItem item={item} />;
       }}
-      ItemSeparatorComponent={() => <Divider />}
+      ItemSeparatorComponent={() => (
+        <View style={{ height: 1, backgroundColor: colors.outlineVariant }} />
+      )}
     />
   );
 };
@@ -54,53 +50,63 @@ type RenderListItemProps = {
 };
 
 const RenderListItem: FC<RenderListItemProps> = ({ item }) => {
-  const { colors } = useTheme();
+  const colors = useAppColors();
   return (
-    <>
-      <List.Item
-        title={item.namaLatin}
-        titleStyle={{
-          fontFamily: "Poppins_Bold",
+    <Pressable
+      onPress={() => router.push(`/surat/${item.nomor}`)}
+      style={{
+        minHeight: 76,
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 12,
+        paddingRight: 16,
+      }}
+    >
+      <View
+        style={{
+          marginLeft: 10,
+          width: 45,
+          height: 45,
+          backgroundColor: colors.primary,
+          borderRadius: 100,
+          alignItems: "center",
+          justifyContent: "center",
         }}
-        description={removeHtmlTags(item.deskripsi)}
-        descriptionStyle={{
-          fontFamily: "Poppins_Regular",
-        }}
-        onPress={() => router.push(`/surat/${item.nomor}`)}
-        left={() => (
-          <View
-            style={{
-              marginVertical: "auto",
-              marginLeft: 10,
-              width: 40,
-              height: 40,
-              backgroundColor: colors.primary,
-              borderRadius: 100,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                marginVertical: "auto",
-                fontSize: 18,
-                fontFamily: "Poppins_Bold",
-              }}
-            >
-              {item.nomor}
-            </Text>
-          </View>
-        )}
-        right={() => (
-          <Text
-            style={{
-              color: colors.primary,
-            }}
-          >
-            {item.nama}
-          </Text>
-        )}
-      />
-    </>
+      >
+        <Text
+          style={{
+            color: colors.onPrimary,
+            fontSize: 18,
+            fontFamily: "Poppins_Bold",
+            includeFontPadding: false,
+          }}
+        >
+          {item.nomor}
+        </Text>
+      </View>
+      <View style={{ flex: 1, marginHorizontal: 12 }}>
+        <Text
+          style={{
+            color: colors.onSurface,
+            fontFamily: "Poppins_Bold",
+            includeFontPadding: false,
+          }}
+        >
+          {item.namaLatin}
+        </Text>
+        <Text
+          numberOfLines={2}
+          style={{
+            color: colors.onSurfaceVariant,
+            fontFamily: "Poppins_Regular",
+            includeFontPadding: false,
+          }}
+        >
+          {removeHtmlTags(item.deskripsi)}
+        </Text>
+      </View>
+      <Text style={{ color: colors.primary }}>{item.nama}</Text>
+    </Pressable>
   );
 };
 export default RenderListHome;

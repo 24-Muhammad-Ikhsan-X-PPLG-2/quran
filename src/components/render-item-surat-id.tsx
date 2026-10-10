@@ -1,9 +1,9 @@
-import { Icon, List, Text, useTheme } from "react-native-paper";
 import { Ayat } from "../types/surat";
-import React, { FC, useEffect, useState } from "react";
-import { View } from "react-native";
-import { Audio } from "expo-av";
-import { soundSurat } from "../app/surat/[id]";
+import React, { FC, useEffect, useRef, useState } from "react";
+import { Pressable, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { createAudioPlayer, type AudioPlayer } from "expo-audio";
+import { useAppColors } from "../hooks/useAppColors";
 
 type RenderItemSuratProps = {
   item: Ayat;
@@ -18,61 +18,136 @@ const RenderItemSurat: FC<RenderItemSuratProps> = ({
   onSoundPlaying = () => {},
   onPress = () => {},
 }) => {
-  const { colors } = useTheme();
-  const [soundState, setSoundState] = useState<Audio.Sound | null>(null);
+  const colors = useAppColors();
+  const [soundState, setSoundState] = useState<AudioPlayer | null>(null);
   const [isPaused, setIsPaused] = useState(false);
-  async function playSound() {
+  const onSoundFinishedRef = useRef(onSoundFinished);
+  const onSoundPlayingRef = useRef(onSoundPlaying);
+  onSoundFinishedRef.current = onSoundFinished;
+  onSoundPlayingRef.current = onSoundPlaying;
+  function playSound() {
     if (soundState) {
-      await soundState.playAsync();
+      soundState.play();
       setIsPaused(false);
     } else {
-      const { sound } = await soundSurat.createAsync(
-        {
-          uri: item.audio["02"],
-        },
-        {},
-        (status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            setSoundState(null);
-            onSoundFinished();
-            sound.unloadAsync();
-          }
-          if (status.isLoaded && status.isPlaying) {
-            onSoundPlaying();
-          }
-        }
-      );
-
-      setSoundState(sound);
-      await sound.playAsync();
+      const player = createAudioPlayer({ uri: item.audio["02"] });
+      setSoundState(player);
+      player.play();
       setIsPaused(false);
     }
   }
-  async function pauseSound() {
+  function pauseSound() {
     if (soundState) {
-      await soundState.pauseAsync();
+      soundState.pause();
       setIsPaused(true);
     }
   }
   useEffect(() => {
-    return () => {
-      if (soundState) {
-        (async () => {
-          await soundState.stopAsync();
-          await soundState.unloadAsync();
-        })();
-        setSoundState(null);
-        setIsPaused(false);
+    if (!soundState) return;
+    const statusSubscription = soundState.addListener(
+      "playbackStatusUpdate",
+      (status) => {
+        if (status.didJustFinish) {
+          setSoundState(null);
+          setIsPaused(false);
+          onSoundFinishedRef.current();
+        }
+        if (status.playing) {
+          onSoundPlayingRef.current();
+        }
       }
+    );
+    return () => {
+      statusSubscription.remove();
+      soundState.remove();
     };
   }, [soundState]);
 
   return (
-    <>
-      <List.Item
-        descriptionStyle={{
-          marginBottom: 40,
+    <View
+      style={{
+        marginHorizontal: 16,
+        paddingHorizontal: 18,
+        paddingTop: 18,
+        paddingBottom: 16,
+        borderRadius: 20,
+        backgroundColor: colors.elevation.level1,
+        borderWidth: 1,
+        borderColor: colors.outlineVariant,
+      }}
+    >
+      <View
+        style={{
+          width: 36,
+          height: 36,
+          paddingHorizontal: 5,
+          backgroundColor: colors.primary,
+          borderRadius: 12,
+          alignItems: "center",
+          justifyContent: "center",
         }}
+      >
+        <Text
+          style={{
+            color: colors.onPrimary,
+            fontFamily: "Poppins_Bold",
+            includeFontPadding: false,
+            fontSize: 14,
+          }}
+        >
+          {item.nomorAyat}
+        </Text>
+      </View>
+      <Text
+        style={{
+          textAlign: "right",
+          color: colors.onSurface,
+          fontSize: 30,
+          fontFamily: "Amiri_Regular",
+          lineHeight: 62,
+          marginTop: 8,
+        }}
+      >
+        {item.teksArab}
+      </Text>
+      <View
+        style={{
+          height: 1,
+          backgroundColor: colors.outlineVariant,
+          marginTop: 12,
+          marginBottom: 12,
+        }}
+      />
+      <Text
+        style={{
+          color: colors.primary,
+          fontSize: 16,
+          lineHeight: 26,
+          fontFamily: "Poppins_Regular",
+          includeFontPadding: false,
+          marginBottom: 8,
+        }}
+      >
+        {item.teksLatin}
+      </Text>
+      <Text
+        style={{
+          color: colors.onSurfaceVariant,
+          fontSize: 15,
+          lineHeight: 24,
+          fontFamily: "Poppins_Regular",
+          includeFontPadding: false,
+        }}
+      >
+        {item.teksIndonesia}
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={
+          soundState && !isPaused
+            ? `Jeda audio ayat ${item.nomorAyat}`
+            : `Putar audio ayat ${item.nomorAyat}`
+        }
         onPress={() => {
           onPress();
           if (soundState && !isPaused) {
@@ -81,88 +156,35 @@ const RenderItemSurat: FC<RenderItemSuratProps> = ({
             playSound();
           }
         }}
-        title={
-          <Text
-            style={{
-              textAlign: "right",
-              fontSize: 28,
-              fontFamily: "Amiri_Regular",
-              fontWeight: "600",
-              lineHeight: 75,
-            }}
-          >
-            {item.teksArab}
-          </Text>
-        }
-        titleStyle={{
-          marginBottom: 10,
+        style={{
+          alignSelf: "flex-end",
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 7,
+          borderRadius: 18,
+          backgroundColor: colors.primaryContainer,
         }}
-        titleNumberOfLines={0}
-        left={() => (
-          <View
-            style={{
-              marginLeft: 10,
-              width: 30,
-              height: 30,
-              backgroundColor: colors.primary,
-              borderRadius: 100,
-            }}
-          >
-            {soundState ? (
-              <Text
-                style={{
-                  textAlign: "center",
-                  marginVertical: "auto",
-                  fontFamily: "Poppins_Bold",
-                  fontSize: 18,
-                  color: "white",
-                }}
-              >
-                {isPaused ? (
-                  <Icon source="play" size={24} />
-                ) : (
-                  <Icon source="pause" size={24} />
-                )}
-              </Text>
-            ) : (
-              <Text
-                style={{
-                  textAlign: "center",
-                  marginVertical: "auto",
-                  fontFamily: "Poppins_Bold",
-                  fontSize: 18,
-                }}
-              >
-                {item.nomorAyat}
-              </Text>
-            )}
-          </View>
-        )}
-        description={
-          <View>
-            <Text
-              style={{
-                fontSize: 20,
-
-                marginBottom: 5,
-                fontFamily: "Poppins_Regular",
-              }}
-            >
-              {item.teksLatin}
-            </Text>
-            <Text
-              style={{
-                fontSize: 17,
-                color: "gray",
-                fontFamily: "Poppins_Regular",
-              }}
-            >
-              {item.teksIndonesia}
-            </Text>
-          </View>
-        }
-      />
-    </>
+      >
+        <MaterialCommunityIcons
+          name={soundState && !isPaused ? "pause" : "play"}
+          size={18}
+          color={colors.onPrimaryContainer}
+        />
+        <Text
+          style={{
+            marginLeft: 6,
+            color: colors.onPrimaryContainer,
+            fontSize: 12,
+            fontFamily: "Poppins_Bold",
+            includeFontPadding: false,
+          }}
+        >
+          {soundState && !isPaused ? "Jeda" : "Putar"}
+        </Text>
+      </Pressable>
+    </View>
   );
 };
 export default RenderItemSurat;

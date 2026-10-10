@@ -1,21 +1,9 @@
 import { Stack } from "expo-router";
-import merge from "deepmerge";
-import {
-  adaptNavigationTheme,
-  MD3DarkTheme,
-  MD3LightTheme,
-  PaperProvider,
-} from "react-native-paper";
 import { Colors } from "../constants/Color";
-import {
-  DarkTheme as NavigationDarkTheme,
-  DefaultTheme as NavigationDefaultTheme,
-} from "@react-navigation/native";
 import { KeyboardAvoidingView, Text, useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import * as SystemUI from "expo-system-ui";
-import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   useFonts,
@@ -24,17 +12,8 @@ import {
 } from "@expo-google-fonts/poppins";
 import * as SplashScreen from "expo-splash-screen";
 import { View } from "react-native";
-
-const customDarkTheme = { ...MD3DarkTheme, colors: Colors.dark };
-const customLightTheme = { ...MD3LightTheme, colors: Colors.light };
-
-const { DarkTheme, LightTheme } = adaptNavigationTheme({
-  reactNavigationDark: NavigationDarkTheme,
-  reactNavigationLight: NavigationDefaultTheme,
-});
-
-const CombinedDarkTheme = merge(DarkTheme, customDarkTheme);
-const CombinedLightTheme = merge(LightTheme, customLightTheme);
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AppToastHost } from "../components/app-toast";
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -43,11 +22,10 @@ export default function RootLayout() {
     Poppins_Regular: Poppins_400Regular,
     Poppins_Bold: Poppins_700Bold,
   });
-  const paperTheme =
-    colorScheme === "dark" ? CombinedDarkTheme : CombinedLightTheme;
+  const theme = colorScheme === "dark" ? Colors.dark : Colors.light;
   useEffect(() => {
-    SystemUI.setBackgroundColorAsync(paperTheme.colors.background);
-  }, [paperTheme]);
+    SystemUI.setBackgroundColorAsync(theme.background);
+  }, [theme]);
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
@@ -77,18 +55,22 @@ export default function RootLayout() {
           flex: 1,
         }}
       >
-        <PaperProvider theme={paperTheme}>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: theme.background }}
+          edges={["top"]}
+        >
           <Stack
             screenOptions={{
               headerShown: false,
             }}
           >
-            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="search/index" />
             <Stack.Screen name="surat/[id]" />
           </Stack>
-          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-          <Toast />
-        </PaperProvider>
+        </SafeAreaView>
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+        <AppToastHost />
       </GestureHandlerRootView>
     </KeyboardAvoidingView>
   );

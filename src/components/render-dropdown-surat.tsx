@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { FC, useEffect, useState } from "react";
-import { Appbar, Menu } from "react-native-paper";
-import Toast from "react-native-toast-message";
+import { Modal, Pressable, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Toast } from "./app-toast";
+import { useAppColors } from "../hooks/useAppColors";
 
 type Props = {
   id: number;
@@ -10,6 +12,7 @@ type Props = {
 const RenderDropdownMenuSurat: FC<Props> = ({ id }) => {
   const [menuShown, setMenuShown] = useState(false);
   const [isConditionState, setIsConditionState] = useState(0);
+  const colors = useAppColors();
   async function checkConditionState() {
     try {
       const data = await AsyncStorage.getItem(`scroll-${id}`);
@@ -48,28 +51,55 @@ const RenderDropdownMenuSurat: FC<Props> = ({ id }) => {
   return (
     <>
       {isConditionState !== 0 && (
-        <Menu
-          visible={menuShown}
-          contentStyle={{
-            marginTop: 50,
-            marginRight: 10,
-          }}
-          onDismiss={() => setMenuShown(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              onPress={() => setMenuShown(true)}
-            />
-          }
-        >
-          <Menu.Item
-            titleStyle={{
-              fontFamily: "Poppins_Regular",
-            }}
-            title="Menghapus kondisi sebelumnya"
-            onPress={handleDeleteConditionState}
-          />
-        </Menu>
+        <>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="More options"
+            onPress={() => setMenuShown(true)}
+            style={{ width: 48, height: 48, alignItems: "center", justifyContent: "center" }}
+          >
+            <MaterialCommunityIcons name="dots-vertical" size={24} color={colors.onSurface} />
+          </Pressable>
+          <Modal
+            visible={menuShown}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setMenuShown(false)}
+          >
+            <Pressable
+              onPress={() => setMenuShown(false)}
+              style={{ flex: 1, backgroundColor: "transparent" }}
+            >
+              <View
+                style={{
+                  position: "absolute",
+                  top: 56,
+                  right: 12,
+                  minWidth: 220,
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  backgroundColor: colors.elevation.level2,
+                  elevation: 6,
+                }}
+              >
+                <Pressable
+                  onPress={handleDeleteConditionState}
+                  style={{ paddingHorizontal: 16, paddingVertical: 12 }}
+                >
+                  <Text
+                    style={{
+                      color: colors.onSurface,
+                      fontFamily: "Poppins_Regular",
+                      includeFontPadding: false,
+                    }}
+                  >
+                    Menghapus kondisi sebelumnya
+                  </Text>
+                </Pressable>
+              </View>
+            </Pressable>
+          </Modal>
+        </>
       )}
     </>
   );

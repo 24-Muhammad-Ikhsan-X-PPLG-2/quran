@@ -1,9 +1,9 @@
 import { FlashList } from "@shopify/flash-list";
-import { View } from "react-native";
-import { ActivityIndicator, List, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Text, View } from "react-native";
 import { AsmaulHusnaType } from "../types/asmaul-husna";
 import { SharedValue } from "react-native-reanimated";
 import { FC, RefObject } from "react";
+import { useAppColors } from "../hooks/useAppColors";
 
 type RenderFlashlistAsmaulProps = {
   asmaulHusna: AsmaulHusnaType[];
@@ -18,12 +18,12 @@ const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
   translateYFAB,
   handleOnScrollYFAB,
 }) => {
-  const { colors } = useTheme();
+  const colors = useAppColors();
   return (
     <FlashList
       data={asmaulHusna}
       estimatedItemSize={100}
-      ListEmptyComponent={() => <ActivityIndicator />}
+      ListEmptyComponent={() => <ActivityIndicator size="large" color={colors.primary} />}
       keyExtractor={(item) => item.urutan.toString()}
       removeClippedSubviews={true}
       ref={FlashListRef}
@@ -39,28 +39,8 @@ const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
         ></View>
       )}
       renderItem={({ item }) => (
-        <List.Item
-          descriptionStyle={{
-            marginBottom: 40,
-          }}
-          title={
-            <Text
-              style={{
-                textAlign: "right",
-                fontSize: 28,
-                fontFamily: "Amiri_Regular",
-                fontWeight: "600",
-                lineHeight: 75,
-              }}
-            >
-              {item.arab}
-            </Text>
-          }
-          titleStyle={{
-            marginBottom: 10,
-          }}
-          titleNumberOfLines={0}
-          left={() => (
+        <View style={{ paddingVertical: 8 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View
               style={{
                 marginLeft: 10,
@@ -68,26 +48,43 @@ const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
                 height: 30,
                 backgroundColor: colors.primary,
                 borderRadius: 100,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <Text
                 style={{
-                  textAlign: "center",
-                  marginVertical: "auto",
+                  color: colors.onPrimary,
                   fontFamily: "Poppins_Bold",
+                  includeFontPadding: false,
                   fontSize: 18,
                 }}
               >
                 {item.urutan}
               </Text>
             </View>
-          )}
-          description={
-            <View>
+            <Text
+              style={{
+                flex: 1,
+                textAlign: "right",
+                color: colors.onSurface,
+                fontSize: 28,
+                fontFamily: "Amiri_Regular",
+                fontWeight: "600",
+                lineHeight: 75,
+                marginHorizontal: 12,
+              }}
+            >
+              {item.arab}
+            </Text>
+          </View>
+          <View style={{ marginLeft: 52, marginBottom: 40, marginTop: 8 }}>
               <Text
                 style={{
+                  color: colors.onSurface,
                   fontSize: 20,
                   fontFamily: "Poppins_Regular",
+                  includeFontPadding: false,
                   marginBottom: 5,
                 }}
               >
@@ -96,15 +93,15 @@ const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
               <Text
                 style={{
                   fontSize: 17,
-                  color: "gray",
+                  color: colors.onSurfaceVariant,
                   fontFamily: "Poppins_Regular",
+                  includeFontPadding: false,
                 }}
               >
                 {item.arti}
               </Text>
-            </View>
-          }
-        />
+          </View>
+        </View>
       )}
     />
   );

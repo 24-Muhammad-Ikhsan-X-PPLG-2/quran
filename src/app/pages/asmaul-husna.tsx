@@ -1,8 +1,8 @@
-import { View } from "react-native";
-import React, { memo, useRef, useState } from "react";
-import { Appbar, useTheme, FAB } from "react-native-paper";
+import { Pressable, Text, View } from "react-native";
+import { memo, useRef, useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dataAsmaul from "../../data/dataAsmaulHusna.json";
-import { FlashList } from "@shopify/flash-list";
+import { FlashListRef } from "@shopify/flash-list";
 import { useFonts } from "expo-font";
 import { Amiri_400Regular, Amiri_700Bold } from "@expo-google-fonts/amiri";
 import { RenderLoading } from "../../components/render-loading-global";
@@ -13,16 +13,17 @@ import Animated, {
 import { AsmaulHusnaType } from "@/src/types/asmaul-husna";
 import { handleOnScrollYFAB } from "@/src/lib/utils";
 import RenderFlashlistAsmaul from "@/src/components/render-flashlist-asmaul";
+import { useAppColors } from "@/src/hooks/useAppColors";
 
 const AsmaulHusna = memo(() => {
-  const { colors } = useTheme();
+  const colors = useAppColors();
   const [fontsLoaded] = useFonts({
     Amiri_Regular: Amiri_400Regular,
     Amiri_Bold: Amiri_700Bold,
   });
-  const FlashListRef = useRef<FlashList<AsmaulHusnaType>>(null);
+  const FlashListRef = useRef<FlashListRef<AsmaulHusnaType>>(null);
   const [asmaulHusna, setAsmaulHusna] = useState(dataAsmaul);
-  const AnimatedFAB = Animated.createAnimatedComponent(FAB);
+  const AnimatedFAB = Animated.createAnimatedComponent(Pressable);
   const translateYFAB = useSharedValue(300);
   const fabStyle = useAnimatedStyle(() => {
     return {
@@ -35,19 +36,25 @@ const AsmaulHusna = memo(() => {
   }
   return (
     <>
-      <Appbar.Header
+      <View
         style={{
           backgroundColor: colors.elevation.level4,
+          height: 64,
+          paddingHorizontal: 16,
+          justifyContent: "center",
         }}
       >
-        <Appbar.Content
-          title="Asmaul Husna"
-          titleStyle={{
+        <Text
+          style={{
+            color: colors.onSurface,
             fontFamily: "Poppins_Bold",
+            includeFontPadding: false,
             fontSize: 28,
           }}
-        />
-      </Appbar.Header>
+        >
+          Asmaul Husna
+        </Text>
+      </View>
       <View
         style={{
           flex: 1,
@@ -62,12 +69,17 @@ const AsmaulHusna = memo(() => {
           handleOnScrollYFAB={handleOnScrollYFAB}
         />
         <AnimatedFAB
-          icon="arrow-up"
           style={[
             {
               position: "absolute",
               right: 20,
               bottom: 20,
+              width: 56,
+              height: 56,
+              borderRadius: 18,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: colors.primaryContainer,
             },
             fabStyle,
           ]}
@@ -79,7 +91,13 @@ const AsmaulHusna = memo(() => {
               });
             }
           }}
-        />
+        >
+          <MaterialCommunityIcons
+            name="arrow-up"
+            size={24}
+            color={colors.onPrimaryContainer}
+          />
+        </AnimatedFAB>
       </View>
     </>
   );
