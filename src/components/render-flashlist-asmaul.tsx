@@ -2,7 +2,7 @@ import { FlashList } from "@shopify/flash-list";
 import { ActivityIndicator, Text, View } from "react-native";
 import { AsmaulHusnaType } from "../types/asmaul-husna";
 import { SharedValue } from "react-native-reanimated";
-import { FC, RefObject } from "react";
+import { FC, ReactElement, RefObject } from "react";
 import { useAppColors } from "../hooks/useAppColors";
 
 type RenderFlashlistAsmaulProps = {
@@ -10,6 +10,7 @@ type RenderFlashlistAsmaulProps = {
   FlashListRef: RefObject<FlashList<AsmaulHusnaType>>;
   translateYFAB: SharedValue<number>;
   handleOnScrollYFAB: (e: any, translateYFAB: SharedValue<number>) => void;
+  ListHeaderComponent: ReactElement;
 };
 
 const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
@@ -17,50 +18,63 @@ const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
   FlashListRef,
   translateYFAB,
   handleOnScrollYFAB,
+  ListHeaderComponent,
 }) => {
   const colors = useAppColors();
   return (
     <FlashList
       data={asmaulHusna}
       estimatedItemSize={100}
-      ListEmptyComponent={() => <ActivityIndicator size="large" color={colors.primary} />}
+      ListHeaderComponent={ListHeaderComponent}
+      ListEmptyComponent={() => (
+        <ActivityIndicator size="large" color={colors.primary} />
+      )}
       keyExtractor={(item) => item.urutan.toString()}
       removeClippedSubviews={true}
       ref={FlashListRef}
       onScroll={(e) => handleOnScrollYFAB(e, translateYFAB)}
       contentContainerStyle={{
-        paddingBottom: 10,
+        paddingBottom: 24,
       }}
-      ItemSeparatorComponent={() => (
+      ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+      renderItem={({ item }) => (
         <View
           style={{
-            marginBottom: 30,
+            marginHorizontal: 4,
+            padding: 17,
+            borderRadius: 20,
+            backgroundColor: colors.elevation.level1,
+            borderWidth: 1,
+            borderColor: colors.outlineVariant,
           }}
-        ></View>
-      )}
-      renderItem={({ item }) => (
-        <View style={{ paddingVertical: 8 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <View
               style={{
-                marginLeft: 10,
-                width: 30,
-                height: 30,
-                backgroundColor: colors.primary,
-                borderRadius: 100,
+                minWidth: 36,
+                height: 36,
+                paddingHorizontal: 7,
+                borderRadius: 13,
+                backgroundColor: colors.primaryContainer,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <Text
                 style={{
-                  color: colors.onPrimary,
+                  color: colors.onPrimaryContainer,
                   fontFamily: "Poppins_Bold",
                   includeFontPadding: false,
-                  fontSize: 18,
+                  fontSize: 13,
                 }}
               >
-                {item.urutan}
+                {String(item.urutan).padStart(2, "0")}
               </Text>
             </View>
             <Text
@@ -68,39 +82,46 @@ const RenderFlashlistAsmaul: FC<RenderFlashlistAsmaulProps> = ({
                 flex: 1,
                 textAlign: "right",
                 color: colors.onSurface,
-                fontSize: 28,
+                fontSize: 32,
                 fontFamily: "Amiri_Regular",
-                fontWeight: "600",
-                lineHeight: 75,
-                marginHorizontal: 12,
+                lineHeight: 58,
+                marginLeft: 12,
               }}
             >
               {item.arab}
             </Text>
           </View>
-          <View style={{ marginLeft: 52, marginBottom: 40, marginTop: 8 }}>
-              <Text
-                style={{
-                  color: colors.onSurface,
-                  fontSize: 20,
-                  fontFamily: "Poppins_Regular",
-                  includeFontPadding: false,
-                  marginBottom: 5,
-                }}
-              >
-                {item.latin}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 17,
-                  color: colors.onSurfaceVariant,
-                  fontFamily: "Poppins_Regular",
-                  includeFontPadding: false,
-                }}
-              >
-                {item.arti}
-              </Text>
-          </View>
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.outlineVariant,
+              marginTop: 10,
+              marginBottom: 11,
+            }}
+          />
+          <Text
+            style={{
+              color: colors.primary,
+              fontSize: 17,
+              lineHeight: 25,
+              fontFamily: "Poppins_Bold",
+              includeFontPadding: false,
+            }}
+          >
+            {item.latin}
+          </Text>
+          <Text
+            style={{
+              marginTop: 3,
+              fontSize: 14,
+              lineHeight: 21,
+              color: colors.onSurfaceVariant,
+              fontFamily: "Poppins_Regular",
+              includeFontPadding: false,
+            }}
+          >
+            {item.arti}
+          </Text>
         </View>
       )}
     />
