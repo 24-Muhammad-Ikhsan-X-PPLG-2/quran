@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "quran",
+    "name": "Quran Digital",
     "slug": "quran",
     "version": "1.0.3",
     "orientation": "portrait",
@@ -45,7 +45,16 @@
       "expo-font",
       "expo-web-browser",
       "expo-status-bar",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -15,7 +15,8 @@
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
-      }
+      },
+      "bun": "1.4.2"
     }
   },
   "submit": {
